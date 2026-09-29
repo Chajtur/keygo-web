@@ -60,6 +60,10 @@ async function sendEmail(input: { to: string; subject: string; html: string; tex
     return { ok: true, mode: "resend", messageId: response.data?.id };
   }
 
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(`El proveedor de correo "${provider}" no está configurado correctamente en producción.`);
+  }
+
   console.log(`[KeyGo Email] Mock email sent to ${input.to}: ${input.subject}`);
   return { ok: true, mode: "mock" };
 }

@@ -7,7 +7,7 @@ import { sendVerificationEmail } from "@/server/email";
 
 const normalizeEmail = (value: string) => value.trim().toLowerCase();
 const hashText = (value: string) => createHash("sha256").update(value).digest("hex");
-const verificationUrlFor = (token: string) => `${(process.env.APP_BASE_URL || "http://localhost:3000").replace(/\/$/, "")}/api/auth/verify-email?token=${encodeURIComponent(token)}`;
+const verificationUrlFor = (token: string, requestOrigin: string) => `${(process.env.APP_BASE_URL || requestOrigin).replace(/\/$/, "")}/api/auth/verify-email?token=${encodeURIComponent(token)}`;
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     );
     await connection.commit();
 
-    const verificationUrl = verificationUrlFor(token);
+    const verificationUrl = verificationUrlFor(token, new URL(request.url).origin);
     let emailSent = true;
     let emailError: string | undefined;
     try { await sendVerificationEmail({ to: email, fullName, verificationUrl }); }

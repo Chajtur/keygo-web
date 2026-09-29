@@ -31,6 +31,8 @@ APP_BASE_URL=http://localhost:3000
 
 La cuenta de Google debe tener verificación en dos pasos y debe usarse una contraseña de aplicación. No se debe usar ni compartir la contraseña normal de Gmail.
 
+En producción, configura las mismas variables en el servicio Next.js de Railway: `EMAIL_PROVIDER=smtp`, `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=465`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` y `APP_BASE_URL` con el dominio público HTTPS. Después del cambio, redepliega y confirma en los logs que SMTP no reporta errores. Si el remitente conecta, pero Gmail no muestra el mensaje, revisa Spam y la carpeta Todos; SMTP confirma la aceptación por Google, no la llegada a la bandeja principal.
+
 Verificar únicamente la autenticación SMTP:
 
 ```powershell

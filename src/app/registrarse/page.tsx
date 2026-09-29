@@ -14,6 +14,21 @@ export default function RegisterPage() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [result, setResult] = useState<{ lockerCode?: string; emailSent?: boolean; verificationUrl?: string } | null>(null);
+  const [resendNotice, setResendNotice] = useState("");
+  const [resending, setResending] = useState(false);
+
+  async function resendVerification() {
+    setResending(true); setResendNotice("");
+    try {
+      const response = await fetch("/api/auth/resend-verification", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload?.error || "No se pudo procesar la solicitud.");
+      setResendNotice(payload.message);
+    } catch (error) { setResendNotice(error instanceof Error ? error.message : "No se pudo procesar la solicitud."); }
+    finally { setResending(false); }
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -52,7 +67,7 @@ export default function RegisterPage() {
       <section className="auth-form-wrap">
         <div className="auth-form">
           <Link className="back-home" href="/">← Inicio</Link>
-          {submitted ? <div className="register-success"><Check size={32} /><h2>Casillero {result?.lockerCode} creado</h2><p>{result?.emailSent ? "Enviamos un enlace de verificación a tu correo." : "El correo de prueba no pudo enviarse. Puedes continuar con el enlace local mientras se corrige Gmail."}</p>{!result?.emailSent && result?.verificationUrl ? <a href={result.verificationUrl} className="secondary-button">Verificar en modo local</a> : null}<Link href="/ingresar" className="form-button">Ir a ingresar <ArrowRight size={18} /></Link></div> : <>
+          {submitted ? <div className="register-success"><Check size={32} /><h2>Casillero {result?.lockerCode} creado</h2><p>{result?.emailSent ? "Enviamos un enlace de verificación a tu correo." : "No pudimos confirmar el envío del correo. Revisa la configuración de correo o solicita otro enlace."}</p>{!result?.emailSent ? <button type="button" className="secondary-button" onClick={resendVerification} disabled={resending}>{resending ? "Solicitando..." : "Reenviar verificación"}</button> : null}{resendNotice && <p className="form-notice">{resendNotice}</p>}{!result?.emailSent && result?.verificationUrl ? <a href={result.verificationUrl} className="secondary-button">Verificar en modo local</a> : null}<Link href="/ingresar" className="form-button">Ir a ingresar <ArrowRight size={18} /></Link></div> : <>
             <h2>Crea tu casillero</h2><p>Completa tus datos para iniciar.</p>
             <form onSubmit={handleSubmit}>
               <label>Nombre completo<div className="input-wrap"><UserRound size={18} /><input required placeholder="Tu nombre y apellido" autoComplete="name" value={fullName} onChange={(event) => setFullName(event.target.value)} /></div></label>

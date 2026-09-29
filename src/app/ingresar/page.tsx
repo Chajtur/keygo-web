@@ -43,6 +43,7 @@ export default function LoginPage() {
             {error && <p className="auth-error" style={{ color: "#b42318", fontWeight: 700 }}>{error}</p>}
             <button className="form-button" type="submit" disabled={submitting}>{submitting ? "Ingresando..." : "Ingresar"} <ArrowRight size={18} /></button>
           </form>
+          <p className="auth-register"><Link href="/reenviar-verificacion">¿No te llegó el correo de verificación?</Link></p>
           <p className="auth-register">Aun no tienes casillero? <Link href="/registrarse">Crea tu cuenta</Link></p>
         </div>
       </section>
