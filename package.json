@@ -6,15 +6,19 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start -p $PORT",
-    "lint": "eslint"
+    "lint": "eslint",
+    "email:verify": "node scripts/verify-email.mjs",
+    "test:flow": "node scripts/test-flow.mjs"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "lucide-react": "^1.41.0",
-    "mysql2": "^3.18.2",
     "mysql2": "^3.24.4",
     "next": "16.3.4",
+    "nodemailer": "^10.0.10",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "resend": "^6.28.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

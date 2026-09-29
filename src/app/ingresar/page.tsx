@@ -4,13 +4,25 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Eye, LockKeyhole, Mail } from "lucide-react";
 import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const [submitted, setSubmitted] = useState(false);
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSubmitted(true);
+    setSubmitting(true); setError("");
+    try {
+      const response = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload?.error || "No se pudo iniciar sesión.");
+      router.push("/app"); router.refresh();
+    } catch (loginError) { setError(loginError instanceof Error ? loginError.message : "No se pudo iniciar sesión."); }
+    finally { setSubmitting(false); }
   }
 
   return (
@@ -25,11 +37,11 @@ export default function LoginPage() {
           <Link className="back-home" href="/">← Inicio</Link>
           <h2>Bienvenido de vuelta</h2><p>Ingresa a tu cuenta KeyGo.</p>
           <form onSubmit={handleSubmit}>
-            <label>Correo electronico<div className="input-wrap"><Mail size={18} /><input required type="email" placeholder="nombre@correo.com" autoComplete="email" /></div></label>
-            <label>Contrasena<div className="input-wrap"><LockKeyhole size={18} /><input required type="password" placeholder="Tu contrasena" autoComplete="current-password" /><Eye size={18} /></div></label>
+            <label>Correo electronico<div className="input-wrap"><Mail size={18} /><input required type="email" placeholder="nombre@correo.com" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} /></div></label>
+            <label>Contrasena<div className="input-wrap"><LockKeyhole size={18} /><input required type="password" placeholder="Tu contrasena" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} /><Eye size={18} /></div></label>
             <div className="auth-options"><label className="check-label"><input type="checkbox" /> Recordarme</label><Link href="/recuperar-acceso">Olvide mi contrasena</Link></div>
-            {submitted && <p className="form-notice">El acceso se conectara a la base de datos cuando el servicio de autenticacion este disponible.</p>}
-            <button className="form-button" type="submit">Ingresar <ArrowRight size={18} /></button>
+            {error && <p className="auth-error" style={{ color: "#b42318", fontWeight: 700 }}>{error}</p>}
+            <button className="form-button" type="submit" disabled={submitting}>{submitting ? "Ingresando..." : "Ingresar"} <ArrowRight size={18} /></button>
           </form>
           <p className="auth-register">Aun no tienes casillero? <Link href="/registrarse">Crea tu cuenta</Link></p>
         </div>

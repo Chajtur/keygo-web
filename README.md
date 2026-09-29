@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# KeyGo Cargo Express
 
-## Getting Started
+Aplicación Next.js 16 + TypeScript para el ecosistema logístico de KeyGo. La persistencia operativa usa MySQL.
 
-First, run the development server:
+## Flujo vertical disponible
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+1. El cliente se registra en `/registrarse`.
+2. MySQL crea usuario, cliente, aceptación de política, token de verificación y casillero `KG-######` en una sola transacción.
+3. El cliente confirma su correo e inicia sesión en `/ingresar`.
+4. Desde `/app/preregistros/nuevo` registra el tracking de una compra.
+5. Bodega abre `/operacion/recepcion`, escanea el tracking, registra medidas y confirma recepción.
+6. El sistema crea el paquete, guarda su primer evento como `RECEIVED_USA` y notifica al cliente.
+
+El script `npm run test:flow` ejecuta ese recorrido completo con datos de prueba únicos y confirma que el paquete aparece en la cuenta autenticada.
+
+## Variables locales
+
+Copiar `.env.example` a `.env.local` y completar MySQL y correo. Los archivos `.env*` están ignorados por Git.
+
+Para Gmail:
+
+```env
+EMAIL_PROVIDER=smtp
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_USER=correo@gmail.com
+SMTP_PASSWORD=contraseña_de_aplicación
+SMTP_FROM="KeyGo Cargo Express <correo@gmail.com>"
+APP_BASE_URL=http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+La cuenta de Google debe tener verificación en dos pasos y debe usarse una contraseña de aplicación. No se debe usar ni compartir la contraseña normal de Gmail.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Verificar únicamente la autenticación SMTP:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```powershell
+npm.cmd run email:verify
+```
 
-## Learn More
+## Desarrollo y validación
 
-To learn more about Next.js, take a look at the following resources:
+```powershell
+npm.cmd run dev
+npm.cmd run lint
+npm.cmd run build
+npm.cmd run test:flow
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+La ruta operativa de recepción acepta llamadas sin clave únicamente en desarrollo. En producción requiere `OPERATION_API_KEY` mediante la cabecera `x-operation-key`; el siguiente paso será sustituirla por autenticación y permisos de empleados.

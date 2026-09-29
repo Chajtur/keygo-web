@@ -7,10 +7,39 @@ import { FormEvent, useState } from "react";
 
 export default function RegisterPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const [result, setResult] = useState<{ lockerCode?: string; emailSent?: boolean; verificationUrl?: string } | null>(null);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSubmitted(true);
+    setError("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fullName, email, phone, password }),
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload?.error || "No se pudo crear la cuenta.");
+      }
+
+      setResult(payload);
+      setSubmitted(true);
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : "No se pudo crear la cuenta.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -23,15 +52,16 @@ export default function RegisterPage() {
       <section className="auth-form-wrap">
         <div className="auth-form">
           <Link className="back-home" href="/">← Inicio</Link>
-          {submitted ? <div className="register-success"><Check size={32} /><h2>Cuenta lista para verificar</h2><p>Enviaremos un enlace de verificación a tu correo. Al confirmar, recibirás tu código de casillero KeyGo.</p><Link href="/ingresar" className="form-button">Ir a ingresar <ArrowRight size={18} /></Link></div> : <>
+          {submitted ? <div className="register-success"><Check size={32} /><h2>Casillero {result?.lockerCode} creado</h2><p>{result?.emailSent ? "Enviamos un enlace de verificación a tu correo." : "El correo de prueba no pudo enviarse. Puedes continuar con el enlace local mientras se corrige Gmail."}</p>{!result?.emailSent && result?.verificationUrl ? <a href={result.verificationUrl} className="secondary-button">Verificar en modo local</a> : null}<Link href="/ingresar" className="form-button">Ir a ingresar <ArrowRight size={18} /></Link></div> : <>
             <h2>Crea tu casillero</h2><p>Completa tus datos para iniciar.</p>
             <form onSubmit={handleSubmit}>
-              <label>Nombre completo<div className="input-wrap"><UserRound size={18} /><input required placeholder="Tu nombre y apellido" autoComplete="name" /></div></label>
-              <label>Correo electronico<div className="input-wrap"><Mail size={18} /><input required type="email" placeholder="nombre@correo.com" autoComplete="email" /></div></label>
-              <label>Telefono<div className="input-wrap"><Phone size={18} /><input required type="tel" placeholder="+504 0000-0000" autoComplete="tel" /></div></label>
-              <label>Crea una contrasena<div className="input-wrap"><LockKeyhole size={18} /><input required minLength={8} type="password" placeholder="Minimo 8 caracteres" autoComplete="new-password" /></div></label>
+              <label>Nombre completo<div className="input-wrap"><UserRound size={18} /><input required placeholder="Tu nombre y apellido" autoComplete="name" value={fullName} onChange={(event) => setFullName(event.target.value)} /></div></label>
+              <label>Correo electronico<div className="input-wrap"><Mail size={18} /><input required type="email" placeholder="nombre@correo.com" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} /></div></label>
+              <label>Telefono<div className="input-wrap"><Phone size={18} /><input required type="tel" placeholder="+504 0000-0000" autoComplete="tel" value={phone} onChange={(event) => setPhone(event.target.value)} /></div></label>
+              <label>Crea una contrasena<div className="input-wrap"><LockKeyhole size={18} /><input required minLength={8} type="password" placeholder="Minimo 8 caracteres" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} /></div></label>
               <label className="check-label terms"><input required type="checkbox" /> Acepto los terminos y la politica de privacidad.</label>
-              <button className="form-button" type="submit">Crear mi casillero <ArrowRight size={18} /></button>
+              {error ? <p className="auth-error" style={{ color: "#b42318", marginTop: -8, fontSize: 13, fontWeight: 700 }}>{error}</p> : null}
+              <button className="form-button" type="submit" disabled={isSubmitting}>{isSubmitting ? "Creando casillero..." : "Crear mi casillero"} <ArrowRight size={18} /></button>
             </form>
             <p className="auth-register">Ya tienes cuenta? <Link href="/ingresar">Ingresa aquí</Link></p>
           </>}
