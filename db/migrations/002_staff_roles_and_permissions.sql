@@ -1,7 +1,15 @@
 -- KeyGo staff roles and permission catalog. Safe to re-run.
 
--- Operational destination warehouse. The street address remains explicitly
--- unconfigured until KeyGo supplies its real Honduras facility address.
+-- Operational warehouses and receiving locations. TGU's street address remains
+-- explicitly unconfigured until KeyGo supplies its real Honduras facility.
+INSERT INTO warehouses (public_id, code, name, country_code, timezone, address_line1, city, active)
+VALUES (UUID(), 'MIA', 'Bodega Miami', 'US', 'America/New_York', '7420 NW 52nd Street', 'Miami', TRUE)
+ON DUPLICATE KEY UPDATE name = VALUES(name), active = TRUE;
+
+INSERT INTO warehouse_locations (warehouse_id, code, type, active)
+SELECT id, 'MIA-RECEPCION', 'RECEIVING', TRUE FROM warehouses WHERE code = 'MIA'
+ON DUPLICATE KEY UPDATE active = TRUE;
+
 INSERT INTO warehouses (public_id, code, name, country_code, timezone, address_line1, city, active)
 VALUES (UUID(), 'TGU', 'Bodega Honduras', 'HN', 'America/Tegucigalpa', 'Pendiente de configurar', 'Tegucigalpa', TRUE)
 ON DUPLICATE KEY UPDATE name = VALUES(name), active = TRUE;
