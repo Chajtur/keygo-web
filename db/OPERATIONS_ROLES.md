@@ -10,10 +10,11 @@ Aplicar `migrations/002_staff_roles_and_permissions.sql` después del esquema in
 | `BODEGA_HONDURAS` | Registrar ubicación y recepción física en Honduras y preparar paquetes para retiro o entrega. |
 | `FINANZAS` | Finalizar facturas con cargos reales al arribo; revisar comprobantes, confirmar pagos y consultar reportes financieros. |
 | `ENTREGAS_HONDURAS` | Preparar entregas, confirmar entrega de paquetes liberados y registrar identidad del receptor y evidencia. |
+| `ATENCION_CLIENTE` | Mantener FAQs publicadas y atender, asignar y responder tickets de clientes. |
 
 Los empleados pueden tener más de un rol. La restricción por bodega es adicional al permiso: asignar `BODEGA_MIAMI` sin acceso a `MIA` no autoriza registrar recepciones allí. Para las tareas financieras y de entrega se mantiene la regla de negocio: no se valida ni registra pago antes de emitir el monto final en Honduras; un paquete solo se entrega después de confirmar que su propio saldo está cubierto.
 
-Estado de implementación: la migración carga los roles y permisos y prepara las bodegas lógicas `MIA` y `TGU` con sus ubicaciones de recepción. La dirección física de TGU queda como “Pendiente de configurar” hasta que KeyGo proporcione la dirección real. El sistema incluye acceso separado para empleados en `/empleados/ingresar`, protección de las páginas `/operacion`, CRUD de personal con desactivación lógica, asignación múltiple de roles/bodegas y cierre de sesiones; APIs MySQL para actualizar estados de envíos, emitir cargos finales por paquete, revisar comprobantes y registrar entregas. La migración aún debe aplicarse en cada entorno y el flujo debe probarse con cuentas autorizadas.
+Estado de implementación: la migración 002 carga roles/permisos operativos y prepara las bodegas lógicas `MIA` y `TGU`; la migración 003 agrega FAQs y permisos de soporte. La dirección física de TGU queda como “Pendiente de configurar” hasta que KeyGo proporcione la dirección real. El sistema incluye acceso separado para empleados en `/empleados/ingresar`, protección de las páginas `/operacion`, CRUD de personal con desactivación lógica, FAQ pública con CRUD interno y tickets de soporte con conversación, notas internas, asignación y estados. Las migraciones aún deben aplicarse en cada entorno y los flujos deben probarse con cuentas autorizadas.
 
 ## Endpoints operativos
 
@@ -30,6 +31,14 @@ Todas las rutas requieren una sesión activa, cuenta verificada, permiso RBAC y 
 | `GET /api/operation/payments` | `payments.review` / TGU | Lista comprobantes pendientes y los paquetes de la orden. |
 | `PATCH /api/operation/payments/:publicId/review` | `payments.review` / TGU | `{ "action": "APPROVE" }` asigna el pago por paquete y libera cada saldo cubierto; `{ "action": "REJECT", "reason": "..." }` rechaza con motivo. |
 | `POST /api/operation/deliveries` | `deliveries.confirm` / TGU; evidencia también requiere `deliveries.record_evidence` | Registra entrega parcial o múltiple para un cliente, verifica que los paquetes estén listos y sin saldo ni incidentes, y guarda receptor/evidencia. |
+| `GET /api/faqs` | Público | Lista solo FAQs publicadas para la página de soporte. |
+| `GET /api/operation/faqs` | `faqs.manage` | Lista FAQs publicadas y borradores. |
+| `POST /api/operation/faqs` | `faqs.manage` | Crea una FAQ, con publicación opcional. |
+| `PATCH/DELETE /api/operation/faqs/:publicId` | `faqs.manage` | Edita o archiva (despublica) una FAQ. |
+| `GET/POST /api/me/tickets` | Sesión de cliente | Lista tickets propios o abre uno con el primer mensaje y paquete opcional. |
+| `GET/POST/PATCH/DELETE /api/me/tickets/:publicId` | Sesión de cliente, solo propietario | Consulta/responde, edita asunto mientras está abierto o cierra el ticket conservando historial. |
+| `GET /api/operation/tickets` | `tickets.manage` | Filtra tickets por estado y opcionalmente por asignación. |
+| `GET/PATCH/POST /api/operation/tickets/:publicId` | `tickets.manage` | Consulta conversación, asigna empleado, cambia estado, responde o agrega nota interna. |
 
 El endpoint de factura recibe `shipmentPublicId`, `currency` y `packages: [{ packageCode, amount }]`. Exige exactamente los paquetes elegibles del envío y un monto final positivo por paquete. La asignación de costos comunes entre paquetes todavía requiere que Finanzas ingrese el monto final individual; no se inventa una regla de prorrateo. La API de revisión consume órdenes y reportes ya persistidos en MySQL. La integración completa con el envío del comprobante desde el portal cliente queda fuera de estos endpoints operativos.
 
