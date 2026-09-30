@@ -2,9 +2,9 @@ import Link from "next/link";
 import { ArrowRight, Box, PackageCheck, Search } from "lucide-react";
 
 const packages = [
-  { code: "KG-P-000145", tracking: "1Z8A75E...", name: "Ropa y accesorios", status: "En Miami", balance: "USD 28.50", href: "/app/pagos/nuevo" },
-  { code: "KG-P-000120", tracking: "940011...", name: "Articulos para hogar", status: "En transito", balance: "Sin cargos pendientes", href: "/app/envios" },
-  { code: "KG-P-000131", tracking: "TBA308...", name: "Zapatos deportivos", status: "Listo para retirar", balance: "Pagado", href: "/app/retiros/nuevo" },
+  { code: "KG-P-000145", tracking: "1Z8A75E...", name: "Ropa y accesorios", status: "En Miami", balance: "Monto final pendiente hasta llegar a Honduras", href: "/app/envios" },
+  { code: "KG-P-000120", tracking: "940011...", name: "Articulos para hogar", status: "En transito", balance: "Monto final pendiente hasta llegar a Honduras", href: "/app/envios" },
+  { code: "KG-P-000131", tracking: "TBA308...", name: "Zapatos deportivos", status: "En Honduras", balance: "USD 43.20 pendiente de pago", href: "/app/pagos/nuevo" },
 ];
 
 export default function PackagesPage() {

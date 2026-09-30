@@ -33,6 +33,14 @@ La cuenta de Google debe tener verificación en dos pasos y debe usarse una cont
 
 En Railway Hobby no funciona SMTP saliente. Para producción con Resend configura `EMAIL_PROVIDER=resend`, `RESEND_API_KEY`, `RESEND_FROM` (por ejemplo `KeyGo Cargo Express <notificaciones@hondu.tech>`) y `APP_BASE_URL=https://keygo-web-production.up.railway.app`. `APP_BASE_URL` debe ser HTTPS y nunca `localhost`; la aplicación ahora rechaza una URL local en producción para evitar enviar enlaces de verificación inválidos. Tras cambiar las variables, redepliega el servicio y prueba el registro o el reenvío de verificación.
 
+## Roles del personal
+
+El esquema inicial crea las tablas RBAC (`roles`, `permissions`, `user_roles`, `role_permissions` y `user_warehouse_access`). Después de aplicar `db/migrations/001_initial_schema.sql`, ejecutar una vez `db/migrations/002_staff_roles_and_permissions.sql` para cargar los roles y permisos. La recepción de paquetes en producción exige una sesión de empleado, el permiso `packages.receive_mia` y acceso asignado a la bodega `MIA`; el registro de recepción guarda al empleado como responsable. En desarrollo esa ruta sigue disponible para el flujo local.
+
+La migración define administrador, bodega Miami, operaciones logísticas, bodega Honduras, finanzas y entregas Honduras; también prepara `TGU` y `TGU-RECEPCION` con dirección física pendiente de configuración. Para asignar el primer `ADMINISTRADOR_EMPRESA`, use una cuenta activa y verificada desde MySQL y las tablas `user_roles`/`user_warehouse_access`. Luego el administrador gestiona empleados desde `/operacion/personal`.
+
+El acceso separado para empleados está en `/empleados/ingresar`; requiere cuenta activa, correo confirmado y rol vigente. Para crear al primer administrador, aplica la migración de roles, configura temporalmente `ADMIN_BOOTSTRAP_TOKEN` con un valor aleatorio de al menos 32 caracteres, abre `/empleados/configurar-admin` y completa el formulario; al terminar, elimina esa variable y redepliega. El endpoint es de un solo uso: se cierra tras asignar `ADMINISTRADOR_EMPRESA`. El grupo `/operacion` redirige al acceso cuando no hay una sesión de empleado. El CRUD está disponible en `/api/operation/staff` (GET/POST) y `/api/operation/staff/:publicId` (PATCH/DELETE). Incluye asignación de múltiples roles y bodegas, contraseña inicial, edición, desactivación lógica y revocación de sesiones. Las APIs operativas también incluyen cambios auditados de estado de envíos, emisión de cargos finales al arribo, revisión de comprobantes y registro de entregas; contratos y restricciones están en `db/OPERATIONS_ROLES.md`. La emisión final exige un monto individual confirmado por paquete y las órdenes/comprobantes de pago deben existir en MySQL para su revisión.
+
 Verificar únicamente la autenticación SMTP:
 
 ```powershell
@@ -48,4 +56,4 @@ npm.cmd run build
 npm.cmd run test:flow
 ```
 
-La ruta operativa de recepción acepta llamadas sin clave únicamente en desarrollo. En producción requiere `OPERATION_API_KEY` mediante la cabecera `x-operation-key`; el siguiente paso será sustituirla por autenticación y permisos de empleados.
+La ruta `/api/packages/receive-by-tracking` conserva acceso de prueba en desarrollo. En producción exige sesión de empleado con `packages.receive_mia` y acceso asignado a la bodega `MIA`; los endpoints nuevos `/api/operation/*` exigen sesión, permiso RBAC y bodega en todos los entornos.

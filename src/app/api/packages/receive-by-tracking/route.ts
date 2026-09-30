@@ -4,11 +4,17 @@ import type { RowDataPacket } from "mysql2";
 import { ensureOperationalCatalog } from "@/server/catalog";
 import { getDatabase } from "@/server/db/mysql";
 import { sendPackageReceivedEmail } from "@/server/email";
+import { authorizeStaffPermission } from "@/server/auth";
 
 export const dynamic = "force-dynamic";
 export async function POST(request: Request) {
-  if (process.env.NODE_ENV === "production" && request.headers.get("x-operation-key") !== process.env.OPERATION_API_KEY) {
-    return NextResponse.json({ error: "No autorizado." }, { status: 401 });
+  let staffUserId: number | null = null;
+  if (process.env.NODE_ENV === "production") {
+    const authorization = await authorizeStaffPermission("packages.receive_mia", "MIA");
+    if (!authorization.ok) {
+      return NextResponse.json({ error: authorization.status === 401 ? "Inicia sesión con una cuenta de empleado." : "Tu rol no permite recibir paquetes en esta bodega." }, { status: authorization.status });
+    }
+    staffUserId = authorization.userId;
   }
   const body = await request.json();
   const tracking = String(body?.tracking || "").trim();
@@ -28,8 +34,11 @@ export async function POST(request: Request) {
     const prealert = prealerts[0];
     const [warehouses] = await connection.execute<(RowDataPacket & { id: number })[]>("SELECT id FROM warehouses WHERE code='MIA' LIMIT 1");
     const [locations] = await connection.execute<(RowDataPacket & { id: number })[]>("SELECT id FROM warehouse_locations WHERE code='MIA-RECEPCION' LIMIT 1");
-    const [actors] = await connection.execute<(RowDataPacket & { id: number })[]>("SELECT id FROM users WHERE email_normalized='system@keygo.local' LIMIT 1");
-    const warehouse = warehouses[0], location = locations[0], actor = actors[0];
+    const warehouse = warehouses[0], location = locations[0];
+    const actor = staffUserId === null
+      ? (await connection.execute<(RowDataPacket & { id: number })[]>("SELECT id FROM users WHERE email_normalized='system@keygo.local' LIMIT 1"))[0][0]
+      : { id: staffUserId };
+    if (!warehouse || !location || !actor) throw new Error("Falta configurar la bodega, ubicación o usuario de operación.");
     const packageCode = `KG-P-${Date.now().toString().slice(-8)}`;
     const [packageResult] = await connection.execute(
       `INSERT INTO packages (public_id, code, customer_id, prealert_id, carrier_id, tracking_raw, tracking_normalized, warehouse_id, location_id, logistic_status, received_at)

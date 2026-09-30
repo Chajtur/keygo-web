@@ -45,6 +45,7 @@ export default function LoginPage() {
           </form>
           <p className="auth-register"><Link href="/reenviar-verificacion">¿No te llegó el correo de verificación?</Link></p>
           <p className="auth-register">Aun no tienes casillero? <Link href="/registrarse">Crea tu cuenta</Link></p>
+          <p className="auth-register"><Link href="/empleados/ingresar">Acceso para empleados KeyGo</Link></p>
         </div>
       </section>
     </main>

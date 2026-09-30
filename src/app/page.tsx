@@ -191,6 +191,7 @@ export default function Home() {
         </a>
         <p>Miami · Honduras</p>
         <a href="/contacto">Contáctanos</a>
+        <a href="/empleados/ingresar">Acceso de empleados</a>
       </footer>
     </main>
   );
