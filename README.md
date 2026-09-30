@@ -31,7 +31,7 @@ APP_BASE_URL=http://localhost:3000
 
 La cuenta de Google debe tener verificación en dos pasos y debe usarse una contraseña de aplicación. No se debe usar ni compartir la contraseña normal de Gmail.
 
-En producción, configura las mismas variables en el servicio Next.js de Railway: `EMAIL_PROVIDER=smtp`, `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=465`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` y `APP_BASE_URL` con el dominio público HTTPS. Después del cambio, redepliega y confirma en los logs que SMTP no reporta errores. Si el remitente conecta, pero Gmail no muestra el mensaje, revisa Spam y la carpeta Todos; SMTP confirma la aceptación por Google, no la llegada a la bandeja principal.
+En Railway Hobby no funciona SMTP saliente. Para producción con Resend configura `EMAIL_PROVIDER=resend`, `RESEND_API_KEY`, `RESEND_FROM` (por ejemplo `KeyGo Cargo Express <notificaciones@hondu.tech>`) y `APP_BASE_URL=https://keygo-web-production.up.railway.app`. `APP_BASE_URL` debe ser HTTPS y nunca `localhost`; la aplicación ahora rechaza una URL local en producción para evitar enviar enlaces de verificación inválidos. Tras cambiar las variables, redepliega el servicio y prueba el registro o el reenvío de verificación.
 
 Verificar únicamente la autenticación SMTP:
 

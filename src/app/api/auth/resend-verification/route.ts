@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import type { RowDataPacket } from "mysql2";
 import { getDatabase } from "@/server/db/mysql";
 import { sendVerificationEmail } from "@/server/email";
+import { getAppBaseUrl } from "@/server/app-url";
 
 const hashText = (value: string) => createHash("sha256").update(value).digest("hex");
 export const dynamic = "force-dynamic";
@@ -11,6 +12,7 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const email = String(body?.email || "").trim().toLowerCase();
+    const base = getAppBaseUrl(request);
     const generic = { ok: true, message: "Si la cuenta existe y aún no está verificada, enviaremos un nuevo enlace." };
     if (!email || email.length > 255) return NextResponse.json(generic);
 
@@ -34,7 +36,6 @@ export async function POST(request: Request) {
     finally { connection.release(); }
 
     if (recipient) {
-      const base = (process.env.APP_BASE_URL || new URL(request.url).origin).replace(/\/$/, "");
       const verificationUrl = `${base}/api/auth/verify-email?token=${encodeURIComponent(token)}`;
       try { await sendVerificationEmail({ to: email, fullName: recipient.fullName, verificationUrl }); }
       catch (error) { console.error("Verification resend failed:", error); }
