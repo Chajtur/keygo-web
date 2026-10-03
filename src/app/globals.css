@@ -186,3 +186,9 @@ footer { align-items: center; background: #fff; display: flex; justify-content: 
 @media (max-width: 740px) { .customer-nav a.featured i { height: 52px; margin-top: -24px; width: 52px; }.customer-nav a.featured span { margin-top: 0; }.preference-cards { grid-template-columns: 1fr; }.share-keygo-card { grid-template-columns: 1fr; padding: 17px; }.share-keygo-qr { justify-self: center; width: min(100%, 205px); } }
 .share-keygo-logo { display: block; height: 72px; margin: -4px 0 7px; object-fit: contain; object-position: left center; width: 160px; }
 .share-qr-error { color: #526a7e; font-size: 11px; line-height: 1.4; text-align: center; }
+.share-keygo-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.share-card-button { align-items: center; background: var(--orange); border: 1px solid var(--orange); color: #fff; cursor: pointer; display: inline-flex; font: inherit; font-size: 11px; font-weight: 800; gap: 7px; justify-content: center; min-height: 39px; padding: 8px 11px; }
+.share-card-button.secondary { background: transparent; border-color: rgba(255,255,255,.55); color: #fff; }
+.share-card-button:disabled { cursor: wait; opacity: .55; }
+.share-keygo-copy .share-keygo-actions .quiet-button { margin: 0; padding: 8px 4px; }
+.share-card-message { color: #ffe0c9; font-size: 11px; line-height: 1.5; margin: 8px 0 0; }
