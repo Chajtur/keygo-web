@@ -140,3 +140,49 @@ footer { align-items: center; background: #fff; display: flex; justify-content: 
 .dispatch-batch-row { align-items: center; background: #f7f9fb; border: 1px solid #e2e9ef; display: flex; flex-wrap: wrap; gap: 6px 12px; justify-content: space-between; padding: 12px; }
 .dispatch-batch-row b { color: var(--ink); font-size: 12px; }
 .dispatch-batch-row span { color: #718294; font-size: 11px; }
+
+/* Customer mobile navigation with a prominent preregistration shortcut */
+.customer-nav { align-items: center; gap: 0; }
+.customer-nav a { min-width: 0; }
+.customer-nav a i { align-items: center; display: flex; height: 26px; justify-content: center; width: 100%; }
+.customer-nav a.featured { color: var(--ink); justify-content: flex-start; padding-top: 0; }
+.customer-nav a.featured i { background: var(--orange); border: 4px solid #fff; border-radius: 50%; box-shadow: 0 3px 10px rgba(8,49,92,.18); color: #fff; height: 54px; margin-top: -27px; width: 54px; }
+.customer-nav a.featured.active { color: var(--orange); }
+.customer-nav a.featured span { margin-top: 1px; }
+.customer-nav a:focus-visible, .customer-header .icon-button:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+@media (min-width: 741px) { .customer-nav a.featured { justify-content: center; padding-top: 8px; }.customer-nav a.featured i { margin-top: 0; } }
+
+/* Account preferences, legal information and KeyGo share card */
+.preferences-page { display: grid; gap: 18px; }
+.preferences-page .back-link { margin-bottom: 1px; }
+.preference-cards { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.preference-card { align-items: start; background: #fff; border: 1px solid #dfe7ed; color: var(--ink); display: flex; gap: 12px; padding: 15px; text-decoration: none; }
+.preference-card > i { align-items: center; background: #edf3f7; color: var(--orange); display: flex; flex: none; height: 40px; justify-content: center; width: 40px; }
+.preference-card > span { display: grid; gap: 5px; }
+.preference-card b { font-size: 13px; }
+.preference-card small, .preference-caption { color: #718294; font-size: 11px; line-height: 1.5; }
+.preference-card em { color: var(--orange); font-size: 11px; font-style: normal; font-weight: 800; margin-top: 3px; }
+.preference-section { background: #fff; border: 1px solid #dfe7ed; padding: 17px; }
+.preference-section > header { align-items: center; border-bottom: 1px solid #e6edf2; display: flex; gap: 11px; margin-bottom: 13px; padding-bottom: 12px; }
+.preference-section > header > svg { color: var(--orange); flex: none; }
+.preference-section h2 { font-size: 17px; margin: 0 0 3px; }
+.preference-section header p { color: #718294; font-size: 11px; line-height: 1.4; margin: 0; }
+.privacy-summary p { color: #526a7e; font-size: 12px; line-height: 1.65; margin: 0 0 10px; }
+.privacy-summary a { color: var(--orange); font-size: 12px; font-weight: 800; }
+.preference-caption { display: block; margin-top: 12px; }
+.preference-empty { background: #f6f8fa; display: grid; gap: 4px; padding: 13px; }
+.preference-empty b { color: var(--ink); font-size: 12px; }
+.preference-empty span { color: #718294; font-size: 11px; line-height: 1.5; }
+.share-keygo-card { align-items: center; background: var(--ink); color: #fff; display: grid; gap: 20px; grid-template-columns: minmax(0,1fr) 200px; padding: 20px; }
+.share-keygo-copy .eyebrow { color: #ffad72; margin-bottom: 7px; }
+.share-keygo-copy h2 { font-size: 22px; margin: 0 0 7px; }
+.share-keygo-copy > p:not(.eyebrow) { color: #d5e1eb; font-size: 12px; line-height: 1.55; margin: 0 0 14px; }
+.share-keygo-url { align-items: center; background: rgba(255,255,255,.1); color: #fff; display: flex; font-size: 10px; gap: 8px; overflow-wrap: anywhere; padding: 9px; }
+.share-keygo-url svg { color: #ffad72; flex: none; }
+.share-keygo-copy .quiet-button { color: #ffad72; margin-top: 9px; }
+.share-keygo-qr { align-items: center; background: #fff; color: var(--ink); display: flex; flex-direction: column; gap: 7px; justify-content: center; min-height: 200px; padding: 10px; }
+.share-keygo-qr img { display: block; height: 180px; object-fit: contain; width: 180px; }
+.share-keygo-qr small { color: #718294; font-size: 10px; font-weight: 800; }
+@media (max-width: 740px) { .customer-nav a.featured i { height: 52px; margin-top: -24px; width: 52px; }.customer-nav a.featured span { margin-top: 0; }.preference-cards { grid-template-columns: 1fr; }.share-keygo-card { grid-template-columns: 1fr; padding: 17px; }.share-keygo-qr { justify-self: center; width: min(100%, 205px); } }
+.share-keygo-logo { display: block; height: 72px; margin: -4px 0 7px; object-fit: contain; object-position: left center; width: 160px; }
+.share-qr-error { color: #526a7e; font-size: 11px; line-height: 1.4; text-align: center; }
