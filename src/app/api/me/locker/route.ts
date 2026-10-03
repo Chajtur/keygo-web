@@ -12,6 +12,8 @@ type LockerRow = RowDataPacket & {
   addressLine1: string;
   addressLine2: string | null;
   city: string;
+  stateRegion: string | null;
+  postalCode: string | null;
   countryCode: string;
 };
 
@@ -22,7 +24,8 @@ export async function GET() {
   try {
     const [rows] = await getDatabase().execute<LockerRow[]>(`
       SELECT u.full_name fullName, l.code lockerCode, w.name warehouseName,
-             w.address_line1 addressLine1, w.address_line2 addressLine2, w.city, w.country_code countryCode
+             w.address_line1 addressLine1, w.address_line2 addressLine2, w.city,
+             w.state_region stateRegion, w.postal_code postalCode, w.country_code countryCode
       FROM users u
       JOIN customers c ON c.user_id=u.id
       JOIN lockers l ON l.customer_id=c.id AND l.status='ACTIVE'

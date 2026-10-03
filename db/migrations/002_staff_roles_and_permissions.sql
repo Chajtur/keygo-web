@@ -2,9 +2,10 @@
 
 -- Operational warehouses and receiving locations. TGU's street address remains
 -- explicitly unconfigured until KeyGo supplies its real Honduras facility.
-INSERT INTO warehouses (public_id, code, name, country_code, timezone, address_line1, city, active)
-VALUES (UUID(), 'MIA', 'Bodega Miami', 'US', 'America/New_York', '7420 NW 52nd Street', 'Miami', TRUE)
-ON DUPLICATE KEY UPDATE name = VALUES(name), active = TRUE;
+INSERT INTO warehouses (public_id, code, name, country_code, timezone, address_line1, address_line2, city, active)
+VALUES (UUID(), 'MIA', 'Bodega Miami', 'US', 'America/New_York', '5145 Firestone Aly', NULL, 'St. Cloud', TRUE)
+ON DUPLICATE KEY UPDATE name = VALUES(name), address_line1 = VALUES(address_line1),
+  address_line2 = VALUES(address_line2), city = VALUES(city), active = TRUE;
 
 INSERT INTO warehouse_locations (warehouse_id, code, type, active)
 SELECT id, 'MIA-RECEPCION', 'RECEIVING', TRUE FROM warehouses WHERE code = 'MIA'

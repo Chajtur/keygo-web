@@ -1,6 +1,6 @@
 # Roles operativos de KeyGo
 
-Aplicar `migrations/002_staff_roles_and_permissions.sql` después del esquema inicial. La migración es idempotente: se puede volver a ejecutar para sincronizar descripciones y permisos sin duplicar asignaciones.
+Aplicar `migrations/002_staff_roles_and_permissions.sql` después del esquema inicial y luego `migrations/004_miami_warehouse_address.sql` para agregar estado/código postal y actualizar la dirección de Miami. La ubicación es `5145 Firestone Aly, St. Cloud, Florida 34771`.
 
 | Rol | Funciones permitidas |
 |---|---|
@@ -14,7 +14,7 @@ Aplicar `migrations/002_staff_roles_and_permissions.sql` después del esquema in
 
 Los empleados pueden tener más de un rol. La restricción por bodega es adicional al permiso: asignar `BODEGA_MIAMI` sin acceso a `MIA` no autoriza registrar recepciones allí. Para las tareas financieras y de entrega se mantiene la regla de negocio: no se valida ni registra pago antes de emitir el monto final en Honduras; un paquete solo se entrega después de confirmar que su propio saldo está cubierto.
 
-Estado de implementación: la migración 002 carga roles/permisos operativos y prepara las bodegas lógicas `MIA` y `TGU`; la migración 003 agrega FAQs y permisos de soporte. La dirección física de TGU queda como “Pendiente de configurar” hasta que KeyGo proporcione la dirección real. El sistema incluye acceso separado para empleados en `/empleados/ingresar`, protección de las páginas `/operacion`, CRUD de personal con desactivación lógica, FAQ pública con CRUD interno y tickets de soporte con conversación, notas internas, asignación y estados. Las migraciones aún deben aplicarse en cada entorno y los flujos deben probarse con cuentas autorizadas.
+Estado de implementación: la migración 002 carga roles/permisos operativos y prepara las bodegas lógicas `MIA` y `TGU`; la migración 003 agrega FAQs y permisos de soporte; la migración 004 guarda la dirección estructurada de Miami. La dirección física de TGU queda como “Pendiente de configurar” hasta que KeyGo proporcione la dirección real. El sistema incluye acceso separado para empleados en `/empleados/ingresar`, protección de las páginas `/operacion`, CRUD de personal con desactivación lógica, FAQ pública con CRUD interno y tickets de soporte con conversación, notas internas, asignación y estados. Las migraciones aún deben aplicarse en cada entorno y los flujos deben probarse con cuentas autorizadas.
 
 ## Endpoints operativos
 

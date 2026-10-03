@@ -11,6 +11,8 @@ type Locker = {
   addressLine1: string;
   addressLine2: string | null;
   city: string;
+  stateRegion: string | null;
+  postalCode: string | null;
   countryCode: string;
 };
 
@@ -37,7 +39,8 @@ export default function LockerPage() {
   const address = useMemo(() => {
     if (!locker) return "";
     const country = locker.countryCode === "US" ? "United States" : locker.countryCode;
-    return [locker.fullName, locker.lockerCode, locker.addressLine1, locker.addressLine2, locker.city, country]
+    const cityRegionPostal = [locker.city, locker.stateRegion, locker.postalCode].filter(Boolean).join(", ");
+    return [locker.fullName, locker.lockerCode, locker.addressLine1, locker.addressLine2, cityRegionPostal, country]
       .map((line) => line?.trim())
       .filter((line): line is string => Boolean(line))
       .join("\n");
