@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Eye, LockKeyhole, Mail } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -10,6 +10,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -38,7 +39,7 @@ export default function LoginPage() {
           <h2>Bienvenido de vuelta</h2><p>Ingresa a tu cuenta KeyGo.</p>
           <form onSubmit={handleSubmit}>
             <label>Correo electronico<div className="input-wrap"><Mail size={18} /><input required type="email" placeholder="nombre@correo.com" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} /></div></label>
-            <label>Contrasena<div className="input-wrap"><LockKeyhole size={18} /><input required type="password" placeholder="Tu contrasena" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} /><Eye size={18} /></div></label>
+            <div className="auth-field"><label htmlFor="customer-password">Contrasena</label><div className="input-wrap"><LockKeyhole size={18} aria-hidden="true" /><input id="customer-password" required type={showPassword ? "text" : "password"} placeholder="Tu contrasena" autoComplete="current-password" value={password} onChange={(event) => setPassword(event.target.value)} /><button className="password-visibility" type="button" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"} aria-pressed={showPassword}>{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button></div></div>
             <div className="auth-options"><label className="check-label"><input type="checkbox" /> Recordarme</label><Link href="/recuperar-acceso">Olvide mi contrasena</Link></div>
             {error && <p className="auth-error" style={{ color: "#b42318", fontWeight: 700 }}>{error}</p>}
             <button className="form-button" type="submit" disabled={submitting}>{submitting ? "Ingresando..." : "Ingresar"} <ArrowRight size={18} /></button>

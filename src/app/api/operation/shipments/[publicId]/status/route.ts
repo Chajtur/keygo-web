@@ -6,7 +6,7 @@ import { getDatabase } from "@/server/db/mysql";
 export const dynamic = "force-dynamic";
 type Context = { params: Promise<{ publicId: string }> };
 const transitions: Record<string, { permission: string; warehouse: string; next: string[] }> = {
-  REQUESTED: { permission: "consolidations.prepare", warehouse: "MIA", next: ["READY_TO_DISPATCH"] },
+  ASSIGNED: { permission: "shipments.dispatch", warehouse: "MIA", next: ["READY_TO_DISPATCH"] },
   READY_TO_DISPATCH: { permission: "shipments.dispatch", warehouse: "MIA", next: ["DISPATCHED"] },
   DISPATCHED: { permission: "shipments.update_tracking", warehouse: "TGU", next: ["IN_TRANSIT"] },
   IN_TRANSIT: { permission: "shipments.update_tracking", warehouse: "TGU", next: ["CUSTOMS_HN", "ARRIVED_HN"] },
